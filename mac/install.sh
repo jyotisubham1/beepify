@@ -10,71 +10,131 @@ BEEPIFY_ROOT="$(pwd)"
 BEEPIFY_CONFIG="$BEEPIFY_ROOT/shared/config.json"
 BEEPIFY_SOUNDS="$BEEPIFY_ROOT/sounds"
 
+# Get description for each category
+get_desc() {
+  case "$1" in
+    error)   echo "🔴  classic error beeps and buzzes" ;;
+    warning) echo "🟡  soft alerts and chimes" ;;
+    funny)   echo "😄  quirky and fun sounds" ;;
+    memes)   echo "😂  internet meme sounds" ;;
+    custom)  echo "📁  your own sounds" ;;
+    *)       echo "🔊  sounds" ;;
+  esac
+}
+
 clear
 echo ""
 echo -e "\033[0;31m  🔔 beepify — macOS installer\033[0m"
 echo "  ─────────────────────────────────"
 echo ""
-echo "  beepify plays a sound whenever your terminal"
-echo "  throws an error. Choose your error sound below."
+echo "  beepify plays a sound whenever your"
+echo "  terminal throws an error."
 echo ""
 echo "  ─────────────────────────────────"
-echo "  Available sounds:"
+echo "  Step 1: Choose a category"
 echo ""
 
-# List available sounds
 i=1
-sounds=()
-for f in "$BEEPIFY_SOUNDS"/*.aiff; do
-  name=$(basename "$f")
-  echo "  [$i] $name"
-  sounds+=("$name")
-  ((i++))
-done
-
-echo ""
-echo "  [p] Preview a sound before choosing"
-echo ""
-read -p "  Choose a sound [1-${#sounds[@]}]: " choice
-
-# Handle preview
-if [[ "$choice" == "p" ]]; then
-  echo ""
-  read -p "  Enter number to preview [1-${#sounds[@]}]: " preview_num
-  if [[ "$preview_num" =~ ^[0-9]+$ ]] && [ "$preview_num" -ge 1 ] && [ "$preview_num" -le "${#sounds[@]}" ]; then
-    echo "  🔊 Playing: ${sounds[$((preview_num-1))]}"
-    afplay "$BEEPIFY_SOUNDS/${sounds[$((preview_num-1))]}"
+categories=()
+for d in "$BEEPIFY_SOUNDS"/*/; do
+  name=$(basename "$d")
+  if [[ "$name" != "custom" ]]; then
+    desc=$(get_desc "$name")
+    printf "  [%s] %-10s %s\n" "$i" "$name" "$desc"
+    categories+=("$name")
+    ((i++))
   fi
-  echo ""
-  read -p "  Now choose a sound [1-${#sounds[@]}]: " choice
-fi
+done
+printf "  [%s] %-10s %s\n" "$i" "custom" "$(get_desc custom)"
+categories+=("custom")
 
-# Validate input
-if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#sounds[@]}" ]; then
-  echo ""
-  echo "  ❌ Invalid choice. Run the installer again."
+echo ""
+read -p "  Choose category [1-${#categories[@]}]: " cat_choice
+
+# Validate category
+if ! [[ "$cat_choice" =~ ^[0-9]+$ ]] || [ "$cat_choice" -lt 1 ] || [ "$cat_choice" -gt "${#categories[@]}" ]; then
+  echo "  ❌ Invalid choice. Run installer again."
   exit 1
 fi
 
-CHOSEN="${sounds[$((choice-1))]}"
+CHOSEN_CATEGORY="${categories[$((cat_choice-1))]}"
+CATEGORY_PATH="$BEEPIFY_SOUNDS/$CHOSEN_CATEGORY"
 
-# Save to config.json
+# ── Step 2: Pick a sound ──────────────────
+clear
+echo ""
+echo -e "\033[0;31m  🔔 beepify — macOS installer\033[0m"
+echo "  ─────────────────────────────────"
+echo "  Category : $CHOSEN_CATEGORY — $(get_desc $CHOSEN_CATEGORY)"
+echo ""
+echo "  Step 2: Choose a sound"
+echo ""
+
+j=1
+sound_files=()
+for f in "$CATEGORY_PATH"/*.aiff; do
+  if [ -f "$f" ]; then
+    name=$(basename "$f")
+    display=$(echo "$name" | sed 's/^[0-9]*_//' | sed 's/\.aiff//')
+    printf "  [%s] %s\n" "$j" "$display"
+    sound_files+=("$name")
+    ((j++))
+  fi
+done
+
+if [ ${#sound_files[@]} -eq 0 ]; then
+  echo "  ⚠️  No sounds found in $CHOSEN_CATEGORY/"
+  echo "  Add .aiff files to sounds/$CHOSEN_CATEGORY/ and run again."
+  exit 1
+fi
+
+echo ""
+echo "  [p] Preview all sounds in this category"
+echo ""
+read -p "  Choose sound [1-${#sound_files[@]}]: " sound_choice
+
+# Handle preview
+if [[ "$sound_choice" == "p" ]]; then
+  echo ""
+  for k in "${!sound_files[@]}"; do
+    display=$(echo "${sound_files[$k]}" | sed 's/^[0-9]*_//' | sed 's/\.aiff//')
+    echo -e "  \033[0;31m▶ Playing: $display\033[0m"
+    afplay "$CATEGORY_PATH/${sound_files[$k]}"
+    sleep 0.3
+  done
+  echo ""
+  read -p "  Now choose sound [1-${#sound_files[@]}]: " sound_choice
+fi
+
+# Validate sound
+if ! [[ "$sound_choice" =~ ^[0-9]+$ ]] || [ "$sound_choice" -lt 1 ] || [ "$sound_choice" -gt "${#sound_files[@]}" ]; then
+  echo "  ❌ Invalid choice. Run installer again."
+  exit 1
+fi
+
+CHOSEN_SOUND="${sound_files[$((sound_choice-1))]}"
+DISPLAY_NAME=$(echo "$CHOSEN_SOUND" | sed 's/^[0-9]*_//' | sed 's/\.aiff//')
+
+# ── Save config ───────────────────────────
 cat > "$BEEPIFY_CONFIG" << CONF
 {
-  "sound": "$CHOSEN",
+  "category": "$CHOSEN_CATEGORY",
+  "sound": "$CHOSEN_SOUND",
   "activated": false
 }
 CONF
 
+# ── Done ──────────────────────────────────
 clear
 echo ""
 echo -e "\033[0;31m  ✅ beepify configured!\033[0m"
 echo "  ─────────────────────────────────"
-echo "  Sound set to: $CHOSEN"
+echo "  Category : $CHOSEN_CATEGORY"
+echo "  Sound    : $DISPLAY_NAME"
 echo ""
-echo "  To activate beepify in your terminal:"
-echo -e "  \033[0;31m  source mac/activate.sh\033[0m"
+echo "  To activate:"
+echo -e "  \033[0;31m    source mac/activate.sh\033[0m"
 echo ""
 echo "  To deactivate:"
-echo -e "  \033[0;31m  beepify_deactivate\033[0m"
+echo -e "  \033[0;31m    beepify_deactivate\033[0m"
 echo ""
