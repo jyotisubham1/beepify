@@ -5,15 +5,16 @@
 #  The engine: hooks into shell, plays sound on error
 # ─────────────────────────────────────────
 
-BEEPIFY_SOUNDS="$BEEPIFY_ROOT/sounds"
-
-# The error handler - fires on every non-zero exit code
 _beepify_error_handler() {
-  local sound_file="$BEEPIFY_SOUNDS/$BEEPIFY_SOUND"
+  local sound_file="$BEEPIFY_ROOT/sounds/$BEEPIFY_CATEGORY/$BEEPIFY_SOUND"
+  local display=$(echo "$BEEPIFY_SOUND" | sed 's/^[0-9]*_//' | sed 's/\.aiff//')
+
+  echo -e "\033[0;31m🔔 $display\033[0m"
+
   if [ -f "$sound_file" ]; then
-    afplay "$sound_file" &
+    (afplay "$sound_file" &>/dev/null &) 2>/dev/null
+    disown %% 2>/dev/null
   fi
 }
 
-# Activate the error trap
 trap '_beepify_error_handler' ERR

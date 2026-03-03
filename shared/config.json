@@ -1,4 +1,5 @@
 {
-  "sound": "chime.aiff",
+  "category": "error",
+  "sound": "2_sosumi.aiff",
   "activated": false
 }
