@@ -6,7 +6,6 @@
 #  Usage: source mac/activate.sh
 # ─────────────────────────────────────────
 
-# Get beepify root using PWD (more reliable in zsh)
 BEEPIFY_ROOT="$(pwd)"
 BEEPIFY_CONFIG="$BEEPIFY_ROOT/shared/config.json"
 
@@ -24,9 +23,14 @@ fi
 
 # Check config exists
 if [ ! -f "$BEEPIFY_CONFIG" ]; then
-  echo "❌ Config not found at: $BEEPIFY_CONFIG"
-  echo "   Run: bash mac/install.sh first"
+  echo "❌ Config not found. Run: bash mac/install.sh first"
   return 1
+fi
+
+# Check already activated
+if [ "$BEEPIFY_ACTIVE" = "1" ]; then
+  echo -e "\033[0;31m(beepify) ⚠️  already active [$BEEPIFY_SOUND]\033[0m"
+  return 0
 fi
 
 # Read chosen sound
@@ -47,6 +51,26 @@ source "$BEEPIFY_ROOT/mac/core.sh"
 export BEEPIFY_ACTIVE=1
 export BEEPIFY_SOUND
 export BEEPIFY_ROOT
+
+# ─── Deactivate function ───────────────────
+beepify_deactivate() {
+  if [ "$BEEPIFY_ACTIVE" != "1" ]; then
+    echo "❌ beepify is not active"
+    return 1
+  fi
+
+  # Remove the error trap
+  trap - ERR
+
+  # Unset all beepify variables
+  unset BEEPIFY_ACTIVE
+  unset BEEPIFY_SOUND
+  unset BEEPIFY_ROOT
+  unset -f _beepify_error_handler
+  unset -f beepify_deactivate
+
+  echo -e "\033[0;31m(beepify) 🔕 error sounds OFF\033[0m"
+}
 
 # Print activation message in red (just like venv)
 echo -e "\033[0;31m(beepify) 🔔 error sounds ON [$BEEPIFY_SOUND]\033[0m"
