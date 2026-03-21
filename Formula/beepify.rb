@@ -3,9 +3,9 @@ class Beepify < Formula
   homepage "https://github.com/jyotisubham1/beepify"
   license "MIT"
 
-  url "https://github.com/jyotisubham1/beepify/archive/refs/tags/v1.0.1.tar.gz"
-  sha256 "1db0101294126fe905629675973e2b546399e1a4dff43b12b2ab3d2259976aad"
-  version "1.0.1"
+  url "https://github.com/jyotisubham1/beepify/archive/refs/tags/v1.0.2.tar.gz"
+  sha256 "c671a6ea5cda9ae3a14db80d99a06ed09b95d01a60d76b3a24059fbcaa78b455"
+  version "1.0.2"
 
   depends_on "ffmpeg"
   depends_on :macos
