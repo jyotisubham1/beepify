@@ -50,7 +50,7 @@ printf "  [%s] %-10s %s\n" "$i" "custom" "$(get_desc custom)"
 categories+=("custom")
 
 echo ""
-read -p "  Choose category [1-${#categories[@]}]: " cat_choice
+read "cat_choice?  Choose category [1-${#categories[@]}]: "
 
 # Validate category
 if ! [[ "$cat_choice" =~ ^[0-9]+$ ]] || [ "$cat_choice" -lt 1 ] || [ "$cat_choice" -gt "${#categories[@]}" ]; then
@@ -92,7 +92,7 @@ fi
 echo ""
 echo "  [p] Preview all sounds in this category"
 echo ""
-read -p "  Choose sound [1-${#sound_files[@]}]: " sound_choice
+read "sound_choice?  Choose sound [1-${#sound_files[@]}]: "
 
 # Handle preview
 if [[ "$sound_choice" == "p" ]]; then
@@ -104,7 +104,7 @@ if [[ "$sound_choice" == "p" ]]; then
     sleep 0.3
   done
   echo ""
-  read -p "  Now choose sound [1-${#sound_files[@]}]: " sound_choice
+  read "sound_choice?  Now choose sound [1-${#sound_files[@]}]: "
 fi
 
 # Validate sound
@@ -134,8 +134,8 @@ echo "  Category : $CHOSEN_CATEGORY"
 echo "  Sound    : $DISPLAY_NAME"
 echo ""
 echo "  To activate:"
-echo -e "  \033[0;31m    source mac/activate.sh\033[0m"
+echo -e "  \033[0;31m    beepify activate\033[0m"
 echo ""
 echo "  To deactivate:"
-echo -e "  \033[0;31m    beepify_deactivate\033[0m"
+echo -e "  \033[0;31m    beepify deactivate\033[0m"
 echo ""
