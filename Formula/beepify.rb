@@ -3,13 +3,9 @@ class Beepify < Formula
   homepage "https://github.com/jyotisubham1/beepify"
   license "MIT"
 
-  head "https://github.com/jyotisubham1/beepify.git", branch: "main"
-
-  # When you publish a release, replace the head block above with:
-  #
-  # url "https://github.com/jyotisubham1/beepify/archive/refs/tags/v1.0.0.tar.gz"
-  # sha256 "REPLACE_WITH_ACTUAL_SHA256"
-  # version "1.0.0"
+  url "https://github.com/jyotisubham1/beepify/archive/refs/tags/v1.0.0.tar.gz"
+  sha256 "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5"
+  version "1.0.0"
 
   depends_on "ffmpeg"
   depends_on :macos
