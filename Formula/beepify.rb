@@ -30,24 +30,29 @@ class Beepify < Formula
 
   def caveats
     <<~EOS
-      Add shell integration to your ~/.zshrc so that
-      `beepify activate` and `beepify deactivate` work:
+      ─────────────────────────────────────
+      🔔 beepify — getting started
+      ─────────────────────────────────────
+
+      Step 1 — Add shell integration to ~/.zshrc (one-time):
 
         echo 'source $(brew --prefix)/opt/beepify/libexec/shell/beepify.zsh' >> ~/.zshrc
+        source ~/.zshrc
 
-      Then restart your terminal (or run the source command once now).
+      Step 2 — Pick a sound:
 
-      ─────────────────────────────────────
-      Quick start:
+        beepify select
 
-        beepify select      # pick a sound
-        beepify activate    # turn on error sounds
+      Step 3 — Activate:
+
+        beepify activate
+
+      That's it! Any terminal error will now play your sound.
+
+      Other commands:
         beepify deactivate  # turn off
-
-      To auto-convert custom sounds dropped into sounds/custom/:
-
-        beepify watch       # start folder watcher
-        beepify watch stop  # stop it
+        beepify status      # check if active
+        beepify watch       # auto-convert audio dropped into sounds/custom/
       ─────────────────────────────────────
     EOS
   end
