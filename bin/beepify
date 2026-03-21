@@ -15,8 +15,8 @@
 
 # ── Resolve install root ──────────────────
 # Homebrew sets HOMEBREW_PREFIX; fall back to bin/../ for local dev
-if [[ -n "$HOMEBREW_PREFIX" ]] && [[ -d "$HOMEBREW_PREFIX/opt/beepify" ]]; then
-  BEEPIFY_HOME="$HOMEBREW_PREFIX/opt/beepify"
+if [[ -n "$HOMEBREW_PREFIX" ]] && [[ -d "$HOMEBREW_PREFIX/opt/beepify/libexec" ]]; then
+  BEEPIFY_HOME="$HOMEBREW_PREFIX/opt/beepify/libexec"
 else
   BEEPIFY_HOME="$(cd "$(dirname "$0")/.." && pwd)"
 fi
@@ -40,7 +40,7 @@ case "$1" in
     echo ""
     echo "  Add this line to your ~/.zshrc (once):"
     echo ""
-    echo "    source \$(brew --prefix)/opt/beepify/shell/beepify.zsh"
+    echo "    source \$(brew --prefix)/opt/beepify/libexec/shell/beepify.zsh"
     echo ""
     echo "  Then restart your terminal and run:  beepify $1"
     echo ""
@@ -64,7 +64,7 @@ case "$1" in
     echo ""
     echo "  Run this instead (requires shell context):"
     echo ""
-    echo "    source \$(brew --prefix)/opt/beepify/shell/beepify.zsh"
+    echo "    source \$(brew --prefix)/opt/beepify/libexec/shell/beepify.zsh"
     echo "    beepify watch"
     echo ""
     ;;

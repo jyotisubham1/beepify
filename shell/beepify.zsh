@@ -9,7 +9,7 @@
 
 # Resolve beepify home from Homebrew or fallback
 if command -v brew &>/dev/null; then
-  _BEEPIFY_HOME="$(brew --prefix)/opt/beepify"
+  _BEEPIFY_HOME="$(brew --prefix)/opt/beepify/libexec"
 elif [[ -n "$BEEPIFY_HOME" ]]; then
   _BEEPIFY_HOME="$BEEPIFY_HOME"
 else
