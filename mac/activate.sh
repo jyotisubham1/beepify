@@ -5,7 +5,7 @@
 # ─────────────────────────────────────────
 
 BEEPIFY_ROOT="${BEEPIFY_ROOT:-$(pwd)}"
-BEEPIFY_CONFIG="$BEEPIFY_ROOT/shared/config.json"
+BEEPIFY_CONFIG="${BEEPIFY_CONFIG:-$HOME/.config/beepify/config.json}"
 
 # Check macOS
 if [[ "$OSTYPE" != "darwin"* ]]; then

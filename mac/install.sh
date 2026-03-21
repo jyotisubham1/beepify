@@ -6,9 +6,10 @@
 #  Usage: bash mac/install.sh
 # ─────────────────────────────────────────
 
-BEEPIFY_ROOT="$(pwd)"
-BEEPIFY_CONFIG="$BEEPIFY_ROOT/shared/config.json"
+BEEPIFY_ROOT="${BEEPIFY_ROOT:-$(pwd)}"
+BEEPIFY_CONFIG="${BEEPIFY_CONFIG:-$HOME/.config/beepify/config.json}"
 BEEPIFY_SOUNDS="$BEEPIFY_ROOT/sounds"
+mkdir -p "$(dirname "$BEEPIFY_CONFIG")"
 
 # Get description for each category
 get_desc() {
