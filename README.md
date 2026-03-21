@@ -5,12 +5,45 @@
 
 ## Installation
 
+### Homebrew (macOS — recommended)
+
+```bash
+brew tap jyotisubham1/beepify https://github.com/jyotisubham1/beepify
+brew install beepify
+```
+
+Then add shell integration to your `~/.zshrc` **(one-time)**:
+```bash
+echo 'source $(brew --prefix)/opt/beepify/libexec/shell/beepify.zsh' >> ~/.zshrc
+source ~/.zshrc
+```
+
+That's it. Now use:
+```bash
+beepify select      # pick a sound
+beepify activate    # turn on error sounds
+beepify deactivate  # turn off
+```
+
+---
+
+### Manual install (Linux / Windows / dev)
+
 Clone the repo and run the installer from the repo root:
 
+**macOS / Linux**
 ```bash
 git clone https://github.com/jyotisubham1/beepify.git
 cd beepify
-bash mac/install.sh
+bash mac/install.sh      # macOS
+bash linux/install.sh    # Linux
+```
+
+**Windows** (PowerShell)
+```powershell
+git clone https://github.com/jyotisubham1/beepify.git
+cd beepify
+. .\windows\install.ps1
 ```
 
 The installer walks you through two steps:
@@ -31,16 +64,16 @@ Type the number and press Enter.
 
 Each category has sounds to pick from:
 
-| Category | # | Sound     |
-|----------|---|-----------|
-| error    | 1 | basso     |
-| error    | 2 | sosumi    |
-| warning  | 1 | glass     |
-| warning  | 2 | ping      |
-| funny    | 1 | funk      |
-| funny    | 2 | frog      |
-| memes    | 1 | hero      |
-| memes    | 2 | bottle    |
+| Category | # | Sound  |
+|----------|---|--------|
+| error    | 1 | basso  |
+| error    | 2 | sosumi |
+| warning  | 1 | glass  |
+| warning  | 2 | ping   |
+| funny    | 1 | funk   |
+| funny    | 2 | frog   |
+| memes    | 1 | hero   |
+| memes    | 2 | bottle |
 
 > **Tip:** Type `p` to preview all sounds in the category before choosing.
 
@@ -48,16 +81,24 @@ Each category has sounds to pick from:
 
 ## Activating in your terminal
 
-After installation, activate beepify in your current terminal session:
-
+**macOS**
 ```bash
 source mac/activate.sh
 ```
 
-You must use `source` (not `bash`) — this hooks into your current shell session.
+**Linux**
+```bash
+source linux/activate.sh
+```
+
+**Windows** (PowerShell)
+```powershell
+. .\windows\activate.ps1
+```
+
+You must use `source` / `. .\` — this hooks into your current shell session.
 
 When active, you'll see:
-
 ```
 (beepify) 🔔 error sounds ON [error/1_basso.aiff]
 ```
@@ -68,79 +109,137 @@ From now on, any command that exits with an error will play your chosen sound.
 
 ## Deactivating
 
-To turn off sounds in the current session:
-
 ```bash
-beepify_deactivate
+beepify_deactivate         # macOS / Linux
 ```
-
-You'll see:
-
-```
-(beepify) 🔕 error sounds OFF
+```powershell
+beepify_deactivate         # Windows
 ```
 
 ---
 
 ## Changing your sound
 
-Run the installer again to pick a different category or sound:
+Re-run the installer, then re-activate:
 
 ```bash
-bash mac/install.sh
+bash mac/install.sh && source mac/activate.sh       # macOS
+bash linux/install.sh && source linux/activate.sh   # Linux
 ```
-
-Then re-activate:
-
-```bash
-source mac/activate.sh
+```powershell
+. .\windows\install.ps1; . .\windows\activate.ps1   # Windows
 ```
 
 ---
 
 ## Adding custom sounds
 
-Start the folder watcher once — then just drop any audio file into `sounds/custom/` and it converts automatically.
+Start the folder watcher once — then drop any audio file into `sounds/custom/` and it converts automatically to `.aiff`.
 
-**One-time setup** (only ffmpeg needed — no extra tools):
+### macOS
+
+**One-time dependency:**
 ```bash
 brew install ffmpeg
 ```
 
-**Start the watcher** (registers a background macOS launchd agent):
+**Start watcher:**
 ```bash
 source mac/watch_custom.sh
 ```
 
-You'll see:
-```
-(beepify) 👁  custom watcher active
-  Drop any audio file into sounds/custom/
-  It will auto-convert to .aiff — no command needed.
-```
-
-Now drag and drop (or copy) any audio file into `sounds/custom/` — it converts automatically in the background. The original file is removed after conversion.
-
-Supported formats: `.mp3` `.wav` `.m4a` `.aac` `.ogg` `.flac` `.wma` `.mp4` `.mov` `.aif`
-
-To see conversion activity:
-```bash
-tail -f /tmp/beepify_watcher.log
-```
-
-**Stop the watcher:**
+**Stop watcher:**
 ```bash
 source mac/watch_custom.sh stop
 ```
 
-Then pick your sound in the installer:
+**Monitor activity:**
 ```bash
-bash mac/install.sh   # choose category: custom
+tail -f /tmp/beepify_watcher.log
+```
+
+---
+
+### Linux
+
+**One-time dependencies:**
+```bash
+# Ubuntu/Debian
+sudo apt install ffmpeg inotify-tools
+
+# Fedora/RHEL
+sudo dnf install ffmpeg inotify-tools
+
+# Arch
+sudo pacman -S ffmpeg inotify-tools
+```
+
+**Start watcher:**
+```bash
+source linux/watch_custom.sh
+```
+
+**Stop watcher:**
+```bash
+source linux/watch_custom.sh stop
+```
+
+**Monitor activity:**
+```bash
+tail -f /tmp/beepify_watcher.log
+```
+
+---
+
+### Windows (PowerShell)
+
+**One-time dependency:**
+```powershell
+winget install ffmpeg
+# or: choco install ffmpeg
+```
+
+**Start watcher:**
+```powershell
+. .\windows\watch_custom.ps1
+```
+
+**Stop watcher:**
+```powershell
+. .\windows\watch_custom.ps1 -Stop
+```
+
+**Monitor activity:**
+```powershell
+Get-Content $env:TEMP\beepify_watcher.log -Wait
+```
+
+---
+
+### How it works
+
+Drop any audio file into `sounds/custom/` — it auto-converts and the original is removed:
+
+```
+📥 Detected: mysound.mp3
+✅ Done → sounds/custom/1_mysound.aiff
+```
+
+Supported formats: `.mp3` `.wav` `.m4a` `.aac` `.ogg` `.flac` `.wma` `.mp4` `.mov` `.aif`
+
+Then pick it in the installer:
+```bash
+bash mac/install.sh    # choose category: custom
 ```
 
 ---
 
 ## Requirements
 
-- macOS (uses `afplay`)
-- zsh
+| Platform | Shell      | Audio player | Watcher tool         |
+|----------|------------|--------------|----------------------|
+| macOS    | zsh        | afplay       | launchd (built-in)   |
+| Linux    | bash       | aplay/ffplay | inotify-tools        |
+| Windows  | PowerShell | —            | FileSystemWatcher (built-in) |
+
+All platforms require `ffmpeg` for custom sound conversion.

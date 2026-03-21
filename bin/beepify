@@ -1,0 +1,102 @@
+#!/bin/zsh
+
+# ─────────────────────────────────────────
+#  beepify CLI
+#  Usage: beepify <command>
+#
+#  Commands:
+#    activate    Turn on error sounds (current session)
+#    deactivate  Turn off error sounds (current session)
+#    select      Pick a sound interactively
+#    watch       Auto-convert audio dropped into sounds/custom/
+#    status      Show whether beepify is active
+#    help        Show this help
+# ─────────────────────────────────────────
+
+# ── Resolve install root ──────────────────
+# Homebrew sets HOMEBREW_PREFIX; fall back to bin/../ for local dev
+if [[ -n "$HOMEBREW_PREFIX" ]] && [[ -d "$HOMEBREW_PREFIX/opt/beepify" ]]; then
+  BEEPIFY_HOME="$HOMEBREW_PREFIX/opt/beepify"
+else
+  BEEPIFY_HOME="$(cd "$(dirname "$0")/.." && pwd)"
+fi
+
+export BEEPIFY_ROOT="$BEEPIFY_HOME"
+
+# ── Detect OS ─────────────────────────────
+case "$OSTYPE" in
+  darwin*) PLATFORM="mac" ;;
+  linux*)  PLATFORM="linux" ;;
+  *)       PLATFORM="unsupported" ;;
+esac
+
+# ── Commands ──────────────────────────────
+case "$1" in
+
+  activate|deactivate)
+    echo ""
+    echo "  ⚡ beepify $1 modifies your shell session."
+    echo "     It requires shell integration to be loaded."
+    echo ""
+    echo "  Add this line to your ~/.zshrc (once):"
+    echo ""
+    echo "    source \$(brew --prefix)/opt/beepify/shell/beepify.zsh"
+    echo ""
+    echo "  Then restart your terminal and run:  beepify $1"
+    echo ""
+    ;;
+
+  select)
+    if [[ "$PLATFORM" == "unsupported" ]]; then
+      echo "❌ Unsupported platform: $OSTYPE"
+      exit 1
+    fi
+    exec zsh "$BEEPIFY_HOME/$PLATFORM/install.sh"
+    ;;
+
+  watch)
+    if [[ "$PLATFORM" == "unsupported" ]]; then
+      echo "❌ Unsupported platform: $OSTYPE"
+      exit 1
+    fi
+    shift
+    # watch needs to run in current shell context (for stop)
+    echo ""
+    echo "  Run this instead (requires shell context):"
+    echo ""
+    echo "    source \$(brew --prefix)/opt/beepify/shell/beepify.zsh"
+    echo "    beepify watch"
+    echo ""
+    ;;
+
+  status)
+    echo ""
+    if [[ "$BEEPIFY_ACTIVE" == "1" ]]; then
+      echo -e "  \033[0;31m(beepify) 🔔 active [$BEEPIFY_CATEGORY/$BEEPIFY_SOUND]\033[0m"
+    else
+      echo "  (beepify) 🔕 not active"
+    fi
+    echo ""
+    ;;
+
+  help|--help|-h|"")
+    echo ""
+    echo -e "  \033[0;31m🔔 beepify\033[0m — play a sound when your terminal errors"
+    echo ""
+    echo "  Commands:"
+    echo "    beepify activate    Turn on error sounds (current session)"
+    echo "    beepify deactivate  Turn off error sounds"
+    echo "    beepify select      Pick a category and sound"
+    echo "    beepify watch       Auto-convert audio in sounds/custom/"
+    echo "    beepify status      Show active state"
+    echo "    beepify help        Show this help"
+    echo ""
+    ;;
+
+  *)
+    echo "❌ Unknown command: $1"
+    echo "   Run: beepify help"
+    exit 1
+    ;;
+
+esac

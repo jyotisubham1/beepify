@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod +x /Users/jyotisubham/Documents/Projects/repo/beepify/bin/beepify)",
+      "Bash(/Users/jyotisubham/Documents/Projects/repo/beepify/bin/beepify help:*)"
+    ]
+  }
+}

@@ -4,7 +4,7 @@
 #  beepify - mac/activate.sh
 # ─────────────────────────────────────────
 
-BEEPIFY_ROOT="$(pwd)"
+BEEPIFY_ROOT="${BEEPIFY_ROOT:-$(pwd)}"
 BEEPIFY_CONFIG="$BEEPIFY_ROOT/shared/config.json"
 
 # Check macOS
