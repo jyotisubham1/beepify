@@ -4,7 +4,7 @@ class Beepify < Formula
   license "MIT"
 
   url "https://github.com/jyotisubham1/beepify/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5"
+  sha256 "d767e8d99a231cb78e3feca7b80c292824c0c7831c218dfcdde1fafa55772fd6"
   version "1.0.0"
 
   depends_on "ffmpeg"
