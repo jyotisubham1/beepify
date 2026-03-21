@@ -58,7 +58,7 @@ if ! [[ "$cat_choice" =~ ^[0-9]+$ ]] || [ "$cat_choice" -lt 1 ] || [ "$cat_choic
   exit 1
 fi
 
-CHOSEN_CATEGORY="${categories[$((cat_choice-1))]}"
+CHOSEN_CATEGORY="${categories[$cat_choice]}"
 CATEGORY_PATH="$BEEPIFY_SOUNDS/$CHOSEN_CATEGORY"
 
 # ── Step 2: Pick a sound ──────────────────
@@ -97,7 +97,7 @@ read "sound_choice?  Choose sound [1-${#sound_files[@]}]: "
 # Handle preview
 if [[ "$sound_choice" == "p" ]]; then
   echo ""
-  for k in "${!sound_files[@]}"; do
+  for k in {1..${#sound_files[@]}}; do
     display=$(echo "${sound_files[$k]}" | sed 's/^[0-9]*_//' | sed 's/\.aiff//')
     echo -e "  \033[0;31m▶ Playing: $display\033[0m"
     afplay "$CATEGORY_PATH/${sound_files[$k]}"
@@ -113,7 +113,7 @@ if ! [[ "$sound_choice" =~ ^[0-9]+$ ]] || [ "$sound_choice" -lt 1 ] || [ "$sound
   exit 1
 fi
 
-CHOSEN_SOUND="${sound_files[$((sound_choice-1))]}"
+CHOSEN_SOUND="${sound_files[$sound_choice]}"
 DISPLAY_NAME=$(echo "$CHOSEN_SOUND" | sed 's/^[0-9]*_//' | sed 's/\.aiff//')
 
 # ── Save config ───────────────────────────
