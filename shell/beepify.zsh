@@ -27,7 +27,8 @@ beepify() {
         echo -e "\033[0;31m(beepify) ⚠️  already active [$BEEPIFY_CATEGORY/$BEEPIFY_SOUND]\033[0m"
         return 0
       fi
-      BEEPIFY_ROOT="$_BEEPIFY_HOME" source "$_BEEPIFY_HOME/mac/activate.sh"
+      BEEPIFY_ROOT="$_BEEPIFY_HOME"
+      source "$_BEEPIFY_HOME/mac/activate.sh"
       ;;
 
     deactivate)
@@ -39,10 +40,11 @@ beepify() {
       ;;
 
     watch)
+      BEEPIFY_ROOT="$_BEEPIFY_HOME"
       if [[ "$1" == "stop" ]]; then
-        BEEPIFY_ROOT="$_BEEPIFY_HOME" source "$_BEEPIFY_HOME/mac/watch_custom.sh" stop
+        source "$_BEEPIFY_HOME/mac/watch_custom.sh" stop
       else
-        BEEPIFY_ROOT="$_BEEPIFY_HOME" source "$_BEEPIFY_HOME/mac/watch_custom.sh"
+        source "$_BEEPIFY_HOME/mac/watch_custom.sh"
       fi
       ;;
 
@@ -51,7 +53,8 @@ beepify() {
       # If beepify was active, reload with new sound
       if [[ "$BEEPIFY_ACTIVE" == "1" ]]; then
         beepify_deactivate 2>/dev/null
-        BEEPIFY_ROOT="$_BEEPIFY_HOME" source "$_BEEPIFY_HOME/mac/activate.sh"
+        BEEPIFY_ROOT="$_BEEPIFY_HOME"
+        source "$_BEEPIFY_HOME/mac/activate.sh"
       fi
       ;;
 
